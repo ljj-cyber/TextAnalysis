@@ -18,7 +18,7 @@ def get_comment_content(comment):
 
 
 def save_to_csv(comments):
-    with open('../data/comments.csv', 'a', newline='', encoding='utf-8-sig') as csvfile:
+    with open('./data/test.csv', 'a', newline='', encoding='utf-8-sig') as csvfile:
         writer = csv.writer(csvfile)
         for comment in comments:
             if get_comment_content(comment) is None:
@@ -31,7 +31,7 @@ def save_to_csv(comments):
 
 if __name__ == '__main__':
     url0 = 'https://movie.douban.com/subject/35700910/comments'
-    url = 'https://movie.douban.com/subject/35700910/comments'
+    url = 'https://movie.douban.com/subject/36283000/comments'
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.43,',

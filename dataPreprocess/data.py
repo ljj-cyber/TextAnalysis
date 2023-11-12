@@ -2,6 +2,7 @@ import pandas as pd
 import re
 import jieba
 from jieba import posseg
+from sklearn.model_selection import train_test_split
 
 
 def dataCleaning(filename: str):
@@ -56,13 +57,47 @@ def dataCleaning(filename: str):
     return words
 
 
-def splitDataset(allDataPath: str):
+def splitDataset(allDataPath: str, train_size: float = 0.8, test_size: float = 0.1, random_state: int = 42):
     """
-    将整个数据集划分成训练集、测试集、验证集，并存下来
+    将整个数据集划分成训练集、测试集、验证集，并存储下来
     Args:
         allDataPath (str): 总数据集路径
-    """    
+        train_size (float): 训练集比例，默认为0.8
+        test_size (float): 测试集比例，默认为0.1
+        random_state (int): 随机种子，默认为42
+    """
+
+    # 读取CSV文件
+    df = pd.read_csv(allDataPath, header=None, names=['text', 'label'])
+
+    # 获取标签和特征
+    labels = df['label']
+    features = df['text']
+
+    # 划分数据集
+    X_train, X_temp, y_train, y_temp = train_test_split(features, labels, train_size=train_size, random_state=random_state)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=test_size, random_state=random_state)
+
+    # 存储划分后的数据集
+    saveDataset(X_train, y_train, "train_dataset.csv")
+    saveDataset(X_val, y_val, "val_dataset.csv")
+    saveDataset(X_test, y_test, "test_dataset.csv")
+    
+
+def saveDataset(X, y, outputPath):
+    """
+    存储数据集到CSV文件
+    Args:
+        X: 特征列表
+        y: 标签列表
+        outputPath: 输出文件路径
+    """
+    df = pd.DataFrame({'text': X, 'label': y})
+    df.to_csv(outputPath, index=False)
+
+
 
 
 if __name__ == '__main__':
-    print(dataCleaning('./data/comments.csv'))
+    # print(dataCleaning('./data/comments.csv'))
+    splitDataset("./data/test.csv")

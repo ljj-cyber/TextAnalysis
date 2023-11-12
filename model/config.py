@@ -1,8 +1,8 @@
 import os.path
 import torch
 
-#通过修改self.bert_name和self.resnet_name来决定模型的具体结构
-class Config(object):
+
+class Config:
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')   # 设备
         self.dropout = 0.5     # 随机失活
@@ -12,7 +12,7 @@ class Config(object):
         self.batch_size = 64  # mini-batch大小，看显存决定
         self.pad_size = 128  # 每句话处理成的长度(短填长切)
         self.bert_learning_rate = 1e-4   # bert的学习率，minirbt-h256需要用更大的学习率例如1e-4,其他bert模型设置为1e-5较好
-
+        self.tokenizer = ''
         self.frac = 1  # 使用数据的比例，因为训练时间长，方便调参使用,1为全部数据，0.1代表十分之一的数据
         #['bert_model/bert-base-chinese','bert_model/chinese-bert-wwm-ext','bert_model/minirbt-h256']
         self.bert_name = '../bert_model/minirbt-h256'  # bert类型，三种选择
@@ -21,5 +21,5 @@ class Config(object):
         if not os.path.exists('../model_stored'):
             os.makedirs('../model_stored')
 
-        self.pre_trained = True
+        self.use_pretrained_embedding = True
         self.training = True
