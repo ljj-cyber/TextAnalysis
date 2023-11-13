@@ -23,3 +23,4 @@ class Config:
 
         self.use_pretrained_embedding = True
         self.training = True
+        

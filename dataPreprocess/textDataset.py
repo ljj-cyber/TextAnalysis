@@ -1,15 +1,10 @@
-import sys
-sys.path.append("..")
-for i in sys.path:
-     print(i)
-
-
 import torch
 from tqdm import tqdm
 from torch.utils.data import Dataset
 from transformers import BertTokenizer
 import pandas as pd
-from model import Config
+from .data import *
+
 
 class textDataset(Dataset):
     def __init__(self, config, rawData: str) -> None:
@@ -39,11 +34,11 @@ class textDataset(Dataset):
         Returns:
             Any: _description_
         """        
-        text_tokens = self.tokenize_text(self.rawData['text'][index])
+        text_tokens = dataCleaning(self.rawData['text'][index])
         # 根据训练模式进行处理
         if self.config.training:
             # 如果是训练模式，返回(word_ids, label)
-            label = self.rawData[index]['label']  
+            label = self.rawData['label'][index]  
             return self.process_text(text_tokens), label
         else:
             # 如果是测试模式，只返回word_ids

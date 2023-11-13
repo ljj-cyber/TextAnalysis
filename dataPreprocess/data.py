@@ -5,11 +5,11 @@ from jieba import posseg
 from sklearn.model_selection import train_test_split
 
 
-def dataCleaning(filename: str):
+def dataCleaning(text: str):
     """
     对每条数据进行数据清洗，并分词
     Args:
-        filename (str): 文件路径名
+        text (str): 文本数据
     Returns:
         list[list[str]]: 分词结果
     """    
@@ -18,9 +18,6 @@ def dataCleaning(filename: str):
     :param filename: the absolute/relative path of the data file
     :return: shape [#comments, #words]
     """
-    # 读取CSV文件
-    data = pd.read_csv(filename, names=['text', 'label'])
-
     # 读取停用词列表
     stopwords = []  # 根据实际情况添加停用词
     
@@ -49,12 +46,8 @@ def dataCleaning(filename: str):
         # 返回分词结果
         return seg_list_without_stopwords
 
-    words = []
-    for index, row in data.iterrows():
-        # 对第一列文字数据进行去除停用词和分词
-        words.append(remove_stopwords_and_segment(row[0]))
-
-    return words
+    # 文字数据进行去除停用词和分词
+    return remove_stopwords_and_segment(text)
 
 
 def splitDataset(allDataPath: str, train_size: float = 0.8, test_size: float = 0.1, random_state: int = 42):
@@ -99,5 +92,5 @@ def saveDataset(X, y, outputPath):
 
 
 if __name__ == '__main__':
-    print(dataCleaning('./data/test.csv'))
-    # splitDataset("./data/test.csv")
+    # print(dataCleaning('./data/test.csv'))
+    splitDataset("./data/test.csv")
