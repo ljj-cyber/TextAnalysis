@@ -21,7 +21,7 @@ class textDataset(Dataset):
         """        
         self.config = config
         self.rawData = pd.read_csv(rawData)
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-chinese') 
+        self.tokenizer = BertTokenizer.from_pretrained("./minirbt-h256") 
 
 
     def __len__(self):
@@ -42,6 +42,7 @@ class textDataset(Dataset):
         if self.config.training:
             # 如果是训练模式，返回(word_ids, label)
             label = self.rawData['label'][index]  
+            label = label - 1
             return self.process_text(text), torch.tensor(label, dtype=torch.long).to(self.config.device)
         else:
             # 如果是测试模式，只返回word_ids
