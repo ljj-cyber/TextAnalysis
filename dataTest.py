@@ -11,6 +11,7 @@ if __name__ == '__main__':
     # 如果是训练模式，返回(word_ids, label)
     if config.training:
         word_ids, label = sample
+        print(word_ids.shape)
         print(f"Word IDs: {word_ids}, Label: {label}")
     else:
         # 如果是测试模式，只返回word_ids
