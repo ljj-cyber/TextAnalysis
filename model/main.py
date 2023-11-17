@@ -32,6 +32,7 @@ def train(config):
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 10, gamma=0.5, last_epoch=-1)  # 每2个epoch学习率衰减为原来的一半
     # 训练循环
+    dev_best_loss = 10
     for epoch in range(epochs):
         if os.path.exists(config.save_path):
             model.load_state_dict(torch.load(config.save_path))
@@ -48,7 +49,7 @@ def train(config):
             outputs = model(inputs)
 
             # 计算损失, 值得注意的点，这里的label不需要赋值one-hot编码类型，因为函数内部会自动将label变换为one-hot类型
-            loss = F.cross_entropy(outputs, labels)
+            loss = F.cross_entropy(outputs, labels, weight=torch.tensor([10.0,5.0,3.0,2.0,1.0]).to(config.device))
 
             pred = torch.max(outputs, dim=1)[1]
             pred = pred.cpu()
@@ -67,7 +68,6 @@ def train(config):
         average_loss = total_loss / len(train_loader)
         print(f"Epoch {epoch + 1}/{epochs}, Average Loss: {average_loss}, Train accuracy: {train_acc:>6.4%}")    
 
-        dev_best_loss = 1e4
         if epoch % 5 == 0:
             dev_acc, dev_loss = evaluate(model, val_loader, test=False)  # model.eval()
             if dev_loss < dev_best_loss:
@@ -110,7 +110,7 @@ def evaluate(model, data_iter, test):
             inputs, labels = data
             # print(texts)
             outputs = model(inputs)
-            loss = F.cross_entropy(outputs, labels)
+            loss = F.cross_entropy(outputs, labels, weight=torch.tensor([10.0,5.0,3.0,2.0,1.0]).to(config.device))
             loss_total += loss
             labels = labels.data.cpu().numpy()
             predic = torch.max(outputs.data, 1)[1].cpu().numpy()  ###预测结果
