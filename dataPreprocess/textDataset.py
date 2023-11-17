@@ -21,6 +21,7 @@ class textDataset(Dataset):
         """        
         self.config = config
         self.rawData = pd.read_csv(rawData)
+        # self.dataCleaning()
         self.tokenizer = BertTokenizer.from_pretrained("./minirbt-h256") 
 
 
@@ -38,29 +39,30 @@ class textDataset(Dataset):
             Any: _description_
         """        
         text = self.rawData['text'][index]
-        # 根据训练模式进行处理
-        if self.config.training:
-            # 如果是训练模式，返回(word_ids, label)
-            label = self.rawData['label'][index]  
-            label = label - 1
-            return self.process_text(text), torch.tensor(label, dtype=torch.long).to(self.config.device)
-        else:
-            # 如果是测试模式，只返回word_ids
-            return self.process_text(text)
+        label = self.rawData['label'][index]  
+        label = label - 1
+        return self.process_text(text), torch.tensor(label, dtype=torch.long).to(self.config.device)
         
+
+    def dataCleaning(self):
+        self.rawData = self.rawData.dropna(axis=0, how='any')
+
 
     def process_text(self, text):
         # attention_mask = torch.tensor(text['attention_mask'], dtype=torch.long)
         if self.config.use_pretrained_embedding:
-            # 使用 tokenizer.encode_plus 处理截断和填充
-            inputs = self.tokenizer(
-                text,
-                add_special_tokens=True,
-                max_length=self.config.pad_size,
-                padding='max_length',
-                truncation=True,
-            )
-            return torch.tensor(inputs['input_ids'], dtype=torch.long).to(self.config.device)
+            try:
+                # 使用 tokenizer.encode_plus 处理截断和填充
+                inputs = self.tokenizer(
+                    text,
+                    add_special_tokens=True,
+                    max_length=self.config.pad_size,
+                    padding='max_length',
+                    truncation=True,
+                )
+                return torch.tensor(inputs['input_ids'], dtype=torch.long).to(self.config.device)
+            except ValueError as e:
+                print(text)
         # else:
         #     # 如果使用自己的embedding，使用字典生成input_ids
         #     word_ids = [self.config.word2id.get(word, self.config.unk_token_id) for word in text_tokens]
