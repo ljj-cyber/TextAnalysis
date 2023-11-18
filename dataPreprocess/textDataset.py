@@ -20,8 +20,8 @@ class textDataset(Dataset):
             rawData (str): 数据集路径
         """        
         self.config = config
-        self.rawData = pd.read_csv(rawData)
-        # self.dataCleaning()
+        self.rawData = pd.read_csv(rawData, engine='python')
+        self.dataCleaning()
         self.tokenizer = BertTokenizer.from_pretrained("./minirbt-h256") 
 
 
@@ -38,15 +38,22 @@ class textDataset(Dataset):
         Returns:
             Any: _description_
         """        
-        text = self.rawData['text'][index]
-        label = self.rawData['label'][index]  
-        label = label - 1
+        try:
+            text = self.rawData['text'][index]
+            label = self.rawData['label'][index]  
+            label = label - 1
+        except ValueError as e:
+            print(text, label)
         return self.process_text(text), torch.tensor(label, dtype=torch.long).to(self.config.device)
         
 
     def dataCleaning(self):
-        self.rawData = self.rawData.dropna(axis=0, how='any')
-
+    # 假设self.rawData是一个DataFrame，且包含两列需要处理的数据
+        if 'text' in self.rawData and 'label' in self.rawData:
+            # 删除包含缺失值的行
+            self.rawData = self.rawData.dropna(subset=['text', 'label']).reset_index(drop=True)
+            # 随机采样比例为0.1的数据
+            self.rawData = self.rawData.sample(frac=self.config.frac, random_state=1).reset_index(drop=True)
 
     def process_text(self, text):
         # attention_mask = torch.tensor(text['attention_mask'], dtype=torch.long)

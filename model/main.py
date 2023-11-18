@@ -49,7 +49,7 @@ def train(config):
             outputs = model(inputs)
 
             # 计算损失, 值得注意的点，这里的label不需要赋值one-hot编码类型，因为函数内部会自动将label变换为one-hot类型
-            loss = F.cross_entropy(outputs, labels, weight=torch.tensor([10.0,5.0,3.0,2.0,1.0]).to(config.device))
+            loss = F.cross_entropy(outputs, labels)
 
             pred = torch.max(outputs, dim=1)[1]
             pred = pred.cpu()
@@ -110,7 +110,7 @@ def evaluate(model, data_iter, test):
             inputs, labels = data
             # print(texts)
             outputs = model(inputs)
-            loss = F.cross_entropy(outputs, labels, weight=torch.tensor([10.0,5.0,3.0,2.0,1.0]).to(config.device))
+            loss = F.cross_entropy(outputs, labels)
             loss_total += loss
             labels = labels.data.cpu().numpy()
             predic = torch.max(outputs.data, 1)[1].cpu().numpy()  ###预测结果
