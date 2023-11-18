@@ -93,4 +93,4 @@ def saveDataset(X, y, outputPath):
 
 if __name__ == '__main__':
     # print(dataCleaning('./data/test.csv'))
-    splitDataset("./data/test.csv")
+    splitDataset("./dataset/test.csv")

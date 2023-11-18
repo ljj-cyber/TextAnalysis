@@ -13,7 +13,7 @@ headers = {
 
 def get_comment_content(comment):
     rate = 0
-    for i in range(1, 6):
+    for i in range(1, 3):
         temp = comment.find('span', class_='allstar' + str(10 * i) + ' rating')
         if temp is not None:
             rate = i
@@ -25,7 +25,7 @@ def get_comment_content(comment):
 
 
 def save_to_csv(comments):
-    with open('./data/test.csv', 'a', newline='', encoding='utf-8-sig') as csvfile:
+    with open('./dataset/test.csv', 'a', newline='', encoding='utf-8-sig') as csvfile:
         writer = csv.writer(csvfile)
         for comment in comments:
             if get_comment_content(comment) is None:
